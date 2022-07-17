@@ -1,0 +1,14 @@
+name: TaskList
+version: '${project.version}'
+main: us.ianjohnson.tasklist.TaskList
+api-version: 1.19
+authors: [ UpFault ]
+depend: [ NoteBlockAPI ]
+description: A plugin to keep/track your progress with tasks
+website: https://ianjohnson.us
+commands:
+  tasklist:
+    permission: tasklist.user
+    usage: /task <add|remove|list|help|complete> <task>
+    default: op
+  test:
