@@ -4,3 +4,9 @@
 # | |   | |  | | . ` |  __|   | || | |_ | \   / | |\/| | |
 # | |___| |__| | |\  | |     _| || |__| |_ | |  | |  | | |____
 # \_____\____/|_| \_|_|    |_____\_____(_)|_|  |_|  |_|______|
+
+# List any worlds you want to the commands on.
+disabled-worlds:
+  - world1
+  - world1_nether
+  - world1_the_end
