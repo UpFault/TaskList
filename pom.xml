@@ -6,7 +6,7 @@
 
     <groupId>us.ianjohnson</groupId>
     <artifactId>TaskList</artifactId>
-    <version>1.1-beta</version>
+    <version>1.1-release</version>
     <packaging>jar</packaging>
 
     <name>TaskList</name>

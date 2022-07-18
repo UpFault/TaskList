@@ -71,5 +71,14 @@ public class Utilities {
 		v = v.replace("-", "");
 		return v;
 	}
+
+	//create a unique id with a specific length and prefix or suffix
+	public static String createId(int length, String prefix, String suffix) {
+		StringBuilder id = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+			id.append((int) (Math.random() * 10));
+		}
+		return prefix + id + suffix;
+	}
 }
 

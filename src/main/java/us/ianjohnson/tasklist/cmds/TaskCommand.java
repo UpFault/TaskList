@@ -10,13 +10,11 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.ianjohnson.tasklist.TaskList;
+import us.ianjohnson.tasklist.utils.Utilities;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class TaskCommand implements CommandExecutor, TabCompleter {
 
@@ -31,11 +29,9 @@ public class TaskCommand implements CommandExecutor, TabCompleter {
 			sender.sendMessage(TaskList.getPluginPrefix() + "You cannot use this command in this world.");
 			return true;
 		}
-
 		if (!(sender.hasPermission("tasklist.user") || sender.isOp())) {
 			return true;
 		}
-
 		try {
 
 			switch (args[0].toLowerCase()) {
@@ -80,7 +76,7 @@ public class TaskCommand implements CommandExecutor, TabCompleter {
 	}
 
 	private void update(CommandSender sender, String[] args) throws IOException {
-		int taskNumber = Integer.parseInt(args[2]);
+		String taskNumber = args[2];
 		Player player = (Player) sender;
 		StringBuilder sb = new StringBuilder();
 
@@ -88,12 +84,10 @@ public class TaskCommand implements CommandExecutor, TabCompleter {
 			player.sendMessage(TaskList.getPluginPrefix() + "Task " + taskNumber + " does not exist.");
 			return;
 		}
-
 		for (int i = 3; i < args.length; i++) {
 			sb.append(args[i]);
 			sb.append(" ");
 		}
-
 		String task_name = sb.toString();
 		task_name = task_name.substring(0, task_name.length() - 1);
 
@@ -103,7 +97,7 @@ public class TaskCommand implements CommandExecutor, TabCompleter {
 	}
 
 	private void add(CommandSender sender, String[] args) throws IOException {
-		int taskNumber;
+		String taskNumber;
 		boolean task_status = false;
 		Player player = (Player) sender;
 		StringBuilder sb = new StringBuilder();
@@ -116,11 +110,7 @@ public class TaskCommand implements CommandExecutor, TabCompleter {
 		String task_name = sb.toString();
 		task_name = task_name.substring(0, task_name.length() - 1);
 
-		if (!tasksYML.contains(player.getWorld().getName().toLowerCase())) {
-			taskNumber = 1;
-		} else {
-			taskNumber = Objects.requireNonNull(tasksYML.getConfigurationSection(player.getWorld().getName().toLowerCase())).getKeys(false).size() + 1;
-		}
+		taskNumber = Utilities.createId(5, "Task", "");
 
 		tasksYML.set(player.getWorld().getName().toLowerCase() + "." + taskNumber + ".name", task_name);
 		tasksYML.set(player.getWorld().getName().toLowerCase() + "." + taskNumber + ".status", task_status);
@@ -129,36 +119,33 @@ public class TaskCommand implements CommandExecutor, TabCompleter {
 	}
 
 	private void remove(CommandSender sender, String[] args) throws IOException {
+		String taskNumber = args[1];
 		Player player = (Player) sender;
-		player.sendMessage(TaskList.getPluginPrefix() + "§c This command is not yet implemented.");
-		player.sendMessage("");
-		player.sendMessage(TaskList.getPluginPrefix() + "§c To remove tasks, you will need to manually\nremove them from the config and reassign the numbers\nin order.");
 
-//		int taskNumber = Integer.parseInt(args[1]);
-//		if (!tasksYML.contains(player.getWorld().getName().toLowerCase() + "." + taskNumber)) {
-//			player.sendMessage(TaskList.getPluginPrefix() + "Task " + taskNumber + " does not exist.");
-//			return;
-//		}
-//		tasksYML.set(player.getWorld().getName().toLowerCase() + "." + taskNumber, null);
-//		tasksYML.save(tasksFile);
-//		player.sendMessage(TaskList.getPluginPrefix() + "Task " + taskNumber + " has been removed.");
-//		/*
-//		 *
-//		 * //TODO: REORDER THE TASKS AFTER REMOVING A TASK
-//		 *
-//		 * */
-//		Utilities.reorderList(player);
+		if (args[1].equalsIgnoreCase("all")) {
+			tasksYML.set(player.getWorld().getName().toLowerCase(), null);
+			tasksYML.save(tasksFile);
+			player.sendMessage(TaskList.getPluginPrefix() + "All tasks have been removed.");
+			return;
+		}
 
+		if (!tasksYML.contains(player.getWorld().getName().toLowerCase() + "." + taskNumber)) {
+			player.sendMessage(TaskList.getPluginPrefix() + "Task " + taskNumber + " does not exist.");
+			return;
+		}
+		tasksYML.set(player.getWorld().getName().toLowerCase() + "." + taskNumber, null);
+		tasksYML.save(tasksFile);
+		player.sendMessage(TaskList.getPluginPrefix() + "Task " + taskNumber + " has been removed.");
 	}
 
 	private void list(CommandSender sender) {
 		Player player = (Player) sender;
 		StringBuilder sb = new StringBuilder();
 
-		if (getTaskNumbers((Player) sender).length == 0) {
+		if (Objects.requireNonNull(tasksYML.getConfigurationSection(player.getWorld().getName().toLowerCase())).getKeys(false).toArray(new String[0]).length == 0) {
 			sb.append("§cNo tasks found.");
 		}
-		for (String taskNumber : getTaskNumbers((Player) sender)) {
+		for (String taskNumber : Objects.requireNonNull(tasksYML.getConfigurationSection(player.getWorld().getName().toLowerCase())).getKeys(false).toArray(new String[0])) {
 			if (tasksYML.getBoolean(player.getWorld().getName().toLowerCase() + "." + taskNumber + ".status")) {
 				sb.append("§a");
 				sb.append(taskNumber);
@@ -179,8 +166,17 @@ public class TaskCommand implements CommandExecutor, TabCompleter {
 
 	@SuppressWarnings("all")
 	private void complete(CommandSender sender, String[] args) throws IOException {
-		int taskNumber = Integer.parseInt(args[1]);
+		String taskNumber = args[1];
 		Player player = (Player) sender;
+
+		if (args[1].equalsIgnoreCase("all")) {
+			for (String taskNumber1 : Objects.requireNonNull(tasksYML.getConfigurationSection(player.getWorld().getName().toLowerCase())).getKeys(false).toArray(new String[0])) {
+				tasksYML.set(player.getWorld().getName().toLowerCase() + "." + taskNumber1 + ".status", true);
+				tasksYML.save(tasksFile);
+			}
+			player.sendMessage(TaskList.getPluginPrefix() + "All tasks have been completed.");
+			return;
+		}
 
 		if (tasksYML.getBoolean(player.getWorld().getName().toLowerCase() + "." + taskNumber + ".status")) {
 			player.sendMessage(TaskList.getPluginPrefix() + "Task " + taskNumber + " is already completed.");
@@ -192,8 +188,17 @@ public class TaskCommand implements CommandExecutor, TabCompleter {
 	}
 
 	private void reset(CommandSender sender, String[] args) throws IOException {
-		int taskNumber = Integer.parseInt(args[1]);
+		String taskNumber = args[1];
 		Player player = (Player) sender;
+
+		if (args[1].equalsIgnoreCase("all")) {
+			for (String taskNumber1 : Objects.requireNonNull(tasksYML.getConfigurationSection(player.getWorld().getName().toLowerCase())).getKeys(false).toArray(new String[0])) {
+				tasksYML.set(player.getWorld().getName().toLowerCase() + "." + taskNumber1 + ".status", false);
+				tasksYML.save(tasksFile);
+			}
+			player.sendMessage(TaskList.getPluginPrefix() + "All tasks have been reset.");
+			return;
+		}
 
 		if (!tasksYML.contains(player.getWorld().getName().toLowerCase() + "." + taskNumber)) {
 			player.sendMessage(TaskList.getPluginPrefix() + "This task doesn't exist");
@@ -209,32 +214,34 @@ public class TaskCommand implements CommandExecutor, TabCompleter {
 	}
 
 	@Override
+	@SuppressWarnings("all")
 	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-		String[] subCommands = {"add", "remove", "list", "help", "update", "complete", "reset", "reload"};
+		Player player = (Player) sender;
+		String[] subCommands = {"add", "remove", "list", "update", "complete", "reset", "reload"};
 		if (args.length == 0) {
 			try {
 				return Arrays.asList(subCommands);
 			} catch (Exception ignored) {
-				return Arrays.asList(getTaskNumbers((Player) sender));
+				return Arrays.asList(Objects.requireNonNull(tasksYML.getConfigurationSection(player.getWorld().getName().toLowerCase())).getKeys(false).toArray(new String[0]));
 			}
 		}
 		try {
 			if (args[0].equals("update") && args[1].equals("title")) {
-				return Arrays.asList(getTaskNumbers((Player) sender));
+				return Arrays.asList(Objects.requireNonNull(tasksYML.getConfigurationSection(player.getWorld().getName().toLowerCase())).getKeys(false).toArray(new String[0]));
 			}
 			if (args[0].equals("update")) {
 				return Collections.singletonList("title");
 			}
+			List<String> list = new ArrayList<>();
+			list.add("all");
+			list.addAll(Objects.requireNonNull(tasksYML.getConfigurationSection(player.getWorld().getName().toLowerCase())).getKeys(false));
+
 			if (args[0].equals("remove") || args[0].equals("complete") || args[0].equals("reset")) {
-				return Arrays.asList(getTaskNumbers((Player) sender));
+				return list;
 			}
 		} catch (Exception e) {
 			return Arrays.asList(subCommands);
 		}
 		return Arrays.asList(subCommands);
-	}
-
-	private static String[] getTaskNumbers(Player player) {
-		return Objects.requireNonNull(tasksYML.getConfigurationSection(player.getWorld().getName().toLowerCase())).getKeys(false).toArray(new String[0]);
 	}
 }
