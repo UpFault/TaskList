@@ -133,7 +133,7 @@ public class TaskCommand implements CommandExecutor, TabCompleter {
 		player.sendMessage(TaskList.getPluginPrefix() + "§c This command is not yet implemented.");
 		player.sendMessage("");
 		player.sendMessage(TaskList.getPluginPrefix() + "§c To remove tasks, you will need to manually\nremove them from the config and reassign the numbers\nin order.");
-//
+
 //		int taskNumber = Integer.parseInt(args[1]);
 //		if (!tasksYML.contains(player.getWorld().getName().toLowerCase() + "." + taskNumber)) {
 //			player.sendMessage(TaskList.getPluginPrefix() + "Task " + taskNumber + " does not exist.");

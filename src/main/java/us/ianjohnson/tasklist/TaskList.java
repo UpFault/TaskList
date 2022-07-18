@@ -8,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.generator.WorldInfo;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.ianjohnson.tasklist.cmds.TaskCommand;
-import us.ianjohnson.tasklist.cmds.TestCommand;
 import us.ianjohnson.tasklist.utils.Utilities;
 
 import java.io.File;
@@ -31,9 +30,9 @@ public final class TaskList extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		instance = this;
+		Utilities.checkForUpdates();
 		registerCommands();
 		loadFiles();
-		Utilities.checkForUpdates(this);
 	}
 
 	@Override
@@ -43,7 +42,6 @@ public final class TaskList extends JavaPlugin implements Listener {
 
 	private void registerCommands() {
 		Objects.requireNonNull(getCommand("tasklist")).setExecutor(new TaskCommand());
-		Objects.requireNonNull(getCommand("test")).setExecutor(new TestCommand());
 	}
 
 	public void loadFiles() {

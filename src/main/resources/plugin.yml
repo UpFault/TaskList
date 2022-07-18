@@ -10,4 +10,3 @@ commands:
     permission: tasklist.user
     usage: /task <add|remove|list|help|complete> <task>
     default: op
-  test:
