@@ -55,35 +55,28 @@ public final class TaskList extends JavaPlugin implements Listener {
 		if (!taskFile.exists()) {
 			Utilities.loadResource(this, "tasks.yml");
 		}
-
 		try {
 			taskFileConfig.load(taskFile);
 		} catch (Exception e3) {
 			e3.printStackTrace();
 		}
-
 		for (String langString : taskFileConfig.getKeys(false)) {
 			phrases.put(langString, taskFileConfig.getString(langString));
 		}
-
 		if (!configFile.exists()) {
 			Utilities.loadResource(this, "config.yml");
 		}
-
 		if (!langFile.exists()) {
 			Utilities.loadResource(this, "language.yml");
 		}
-
 		try {
 			langFileConfig.load(langFile);
 		} catch (Exception e3) {
 			e3.printStackTrace();
 		}
-
 		for (String langString : langFileConfig.getKeys(false)) {
 			phrases.put(langString, langFileConfig.getString(langString));
 		}
-
 		FileConfiguration tasksYML = YamlConfiguration.loadConfiguration(tasksFile);
 		for (String world : Bukkit.getWorlds().stream().map(WorldInfo::getName).toArray(String[]::new)) {
 			if (!tasksYML.contains(world)) {
@@ -98,7 +91,6 @@ public final class TaskList extends JavaPlugin implements Listener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		Bukkit.getLogger().info(consolePrefix + "Loaded Audio Files, Phrases, Worlds, and Config Values");
 	}
 
