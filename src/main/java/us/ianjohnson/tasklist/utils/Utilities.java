@@ -47,13 +47,11 @@ public class Utilities {
 			String pluginVersion = getTrueVersion(TaskList.getInstance().getDescription().getVersion());
 			String githubVersion = new String(bytes, StandardCharsets.UTF_8);
 
-			if (Double.parseDouble(getTrueVersion(githubVersion)) >= Double.parseDouble(getTrueVersion(pluginVersion))) {
-				latest = pluginVersion;
+			if (Double.parseDouble(getTrueVersion(githubVersion)) == Double.parseDouble(getTrueVersion(pluginVersion))) {
 				upToDate = true;
 				logger.info("You are running the latest version of TaskList!");
 				logger.info("Trying again in 5 minutes...");
 			} else {
-				githubVersion = latest;
 				logger.warning("A new version of TaskList is available! " + pluginVersion + " -> " + githubVersion);
 				logger.warning("Download it at https://github.com/UpFault/TaskList/releases/latest");
 				upToDate = false;
