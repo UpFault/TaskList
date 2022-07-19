@@ -1,6 +1,8 @@
 package us.ianjohnson.tasklist;
 
 import lombok.Getter;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -33,6 +35,17 @@ public final class TaskList extends JavaPlugin implements Listener {
 		Utilities.checkForUpdates();
 		registerCommands();
 		loadFiles();
+		loadBstats();
+	}
+
+	private void loadBstats() {
+		int pluginId = 15830;
+
+		Metrics metrics = new Metrics(this, pluginId);
+
+		metrics.addCustomChart(new SimplePie("plugin_version", () -> getDescription().getVersion()));
+		metrics.addCustomChart(new SimplePie("plugin_name", () -> getDescription().getName()));
+		metrics.addCustomChart(new SimplePie("plugin_author", () -> getDescription().getAuthors().toString()));
 	}
 
 	@Override
