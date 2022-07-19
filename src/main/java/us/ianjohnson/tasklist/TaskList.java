@@ -45,6 +45,7 @@ public final class TaskList extends JavaPlugin implements Listener {
 		metrics.addCustomChart(new Metrics.SimplePie("plugin_version", () -> getDescription().getVersion()));
 		metrics.addCustomChart(new Metrics.SimplePie("plugin_name", () -> getDescription().getName()));
 		metrics.addCustomChart(new Metrics.SimplePie("plugin_author", () -> getDescription().getAuthors().toString()));
+		metrics.addCustomChart(new Metrics.SimplePie("plugin_activePlayers", () -> String.valueOf(Bukkit.getOnlinePlayers().size())));
 	}
 
 	@Override
